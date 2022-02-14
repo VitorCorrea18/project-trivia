@@ -34,7 +34,7 @@ export default class Login extends Component {
     const { playerName, gravatarEmail, isBtnDisabled } = this.state;
     return (
       <main>
-        <form onSubmit={ () => alert('submeteu') } action="">
+        <form action="">
           <input
             data-testid="input-player-name"
             name="playerName"
