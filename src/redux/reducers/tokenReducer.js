@@ -1,9 +1,11 @@
-const INITIAL_STATE = {
-  token: '',
-};
+import { FETCH_TOKEN } from '../actions/index';
 
-function tokenReducer(state = INITIAL_STATE, action) {
-  switch (action.type) {
+const INITIAL_STATE = '';
+
+function tokenReducer(state = INITIAL_STATE, { type, payload }) {
+  switch (type) {
+  case FETCH_TOKEN:
+    return payload.token;
   default:
     return state;
   }

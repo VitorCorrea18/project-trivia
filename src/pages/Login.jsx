@@ -1,6 +1,11 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { Redirect } from 'react-router-dom';
+import propTypes from 'prop-types';
+import { fetchTokenThunk } from '../redux/actions/index';
+// import fetchToken from '../services/fetch';
 
-export default class Login extends Component {
+class Login extends Component {
   constructor() {
     super();
 
@@ -8,6 +13,7 @@ export default class Login extends Component {
       playerName: '',
       gravatarEmail: '',
       isBtnDisabled: true,
+      isLogged: false,
     };
   }
 
@@ -30,11 +36,27 @@ export default class Login extends Component {
     this.setState({ [name]: value }, this.checkInput);
   };
 
+  saveToken = () => {
+    const { token } = this.props;
+    localStorage.setItem('token', token);
+  }
+
+  handleLogin = async (e) => {
+    e.preventDefault();
+    const { fetchTokenThunkProp } = this.props;
+    // const token = await fetchToken();
+    fetchTokenThunkProp();
+
+    this.saveToken();
+    this.setState({ isLogged: true });
+  };
+
   render() {
-    const { playerName, gravatarEmail, isBtnDisabled } = this.state;
+    const { playerName, gravatarEmail, isBtnDisabled, isLogged } = this.state;
+    if (isLogged) return <Redirect to="/game" />;
     return (
       <main>
-        <form action="">
+        <form onSubmit={ this.handleLogin } action="">
           <input
             data-testid="input-player-name"
             name="playerName"
@@ -64,3 +86,19 @@ export default class Login extends Component {
     );
   }
 }
+
+const mapDispatchToProps = (dispatch) => ({
+  fetchTokenThunkProp: () => dispatch(fetchTokenThunk()),
+  // saveTokenProp: () => dispatch(saveToken()),
+});
+
+const mapStateToProps = ({ tokenReducer }) => ({
+  token: tokenReducer.token,
+});
+
+Login.propTypes = {
+  fetchTokenThunkProp: propTypes.func.isRequired,
+  token: propTypes.string.isRequired,
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Login);
