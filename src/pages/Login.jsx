@@ -4,6 +4,7 @@ import { Redirect } from 'react-router-dom';
 import propTypes from 'prop-types';
 import { saveToken } from '../redux/actions/index'; // Action
 import fetchToken from '../services/fetch';
+import { Link } from 'react-router-dom';
 
 class Login extends Component {
   constructor() {
@@ -81,6 +82,14 @@ class Login extends Component {
             Jogar!
           </button>
         </form>
+        <div>
+          <Link
+            to="/settings"
+            data-testid="btn-settings"
+          >
+            Configurações
+          </Link>
+        </div>
       </main>
     );
   }
