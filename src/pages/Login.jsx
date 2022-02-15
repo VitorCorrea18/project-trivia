@@ -1,7 +1,11 @@
 import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
+import { connect } from 'react-redux';
+import { Redirect, Link } from 'react-router-dom';
+import propTypes from 'prop-types';
+import { saveToken } from '../redux/actions/index'; // Action
+import fetchToken from '../services/fetch';
 
-export default class Login extends Component {
+class Login extends Component {
   constructor() {
     super();
 
@@ -9,6 +13,7 @@ export default class Login extends Component {
       playerName: '',
       gravatarEmail: '',
       isBtnDisabled: true,
+      isLogged: false,
     };
   }
 
@@ -31,24 +36,39 @@ export default class Login extends Component {
     this.setState({ [name]: value }, this.checkInput);
   };
 
+  saveTokenLocalStorage = () => {
+    const { token } = this.props;
+    localStorage.setItem('token', token);
+  }
+
+  handleLogin = async (e) => {
+    e.preventDefault();
+    const { saveTokenProp } = this.props;
+    const data = await fetchToken();
+    await saveTokenProp(data.token);
+    this.saveTokenLocalStorage();
+    this.setState({ isLogged: true });
+  };
+
   render() {
-    const { playerName, gravatarEmail, isBtnDisabled } = this.state;
+    const { playerName, gravatarEmail, isBtnDisabled, isLogged } = this.state;
+    if (isLogged) return <Redirect to="/game" />;
     return (
       <main>
-        <form action="">
+        <form onSubmit={ this.handleLogin } action="">
           <input
             data-testid="input-player-name"
             name="playerName"
-            type="email"
-            placeholder="Email do Gravatar"
+            type="text"
+            placeholder="Nome"
             value={ playerName }
             onChange={ this.handleChange }
           />
           <input
             name="gravatarEmail"
             data-testid="input-gravatar-email"
-            type="text"
-            placeholder="Nome do Jogador"
+            type="email"
+            placeholder="E-mail Gravatar"
             value={ gravatarEmail }
             onChange={ this.handleChange }
           />
@@ -73,3 +93,20 @@ export default class Login extends Component {
     );
   }
 }
+
+const mapDispatchToProps = (dispatch) => ({
+  // fetchTokenThunkProp: () =>localStorage.setItem('token', data.token)); dispatch(fetchTokenThunk()),
+  saveTokenProp: (token) => dispatch(saveToken(token)),
+});
+
+const mapStateToProps = ({ token }) => ({
+  token,
+});
+
+Login.propTypes = {
+  // fetchTokenThunkProp: propTypes.func.isRequired,
+  token: propTypes.string.isRequired,
+  saveTokenProp: propTypes.func.isRequired,
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Login);
