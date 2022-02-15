@@ -2,8 +2,8 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Redirect } from 'react-router-dom';
 import propTypes from 'prop-types';
-import { fetchTokenThunk } from '../redux/actions/index';
-// import fetchToken from '../services/fetch';
+import { saveToken } from '../redux/actions/index'; // Action
+import fetchToken from '../services/fetch';
 
 class Login extends Component {
   constructor() {
@@ -36,18 +36,17 @@ class Login extends Component {
     this.setState({ [name]: value }, this.checkInput);
   };
 
-  saveToken = () => {
+  saveTokenLocalStorage = () => {
     const { token } = this.props;
     localStorage.setItem('token', token);
   }
 
   handleLogin = async (e) => {
     e.preventDefault();
-    const { fetchTokenThunkProp } = this.props;
-    // const token = await fetchToken();
-    fetchTokenThunkProp();
-
-    this.saveToken();
+    const { saveTokenProp } = this.props;
+    const data = await fetchToken();
+    await saveTokenProp(data.token);
+    this.saveTokenLocalStorage();
     this.setState({ isLogged: true });
   };
 
@@ -60,16 +59,16 @@ class Login extends Component {
           <input
             data-testid="input-player-name"
             name="playerName"
-            type="email"
-            placeholder="Email do Gravatar"
+            type="text"
+            placeholder="Nome"
             value={ playerName }
             onChange={ this.handleChange }
           />
           <input
             name="gravatarEmail"
             data-testid="input-gravatar-email"
-            type="text"
-            placeholder="Nome do Jogador"
+            type="email"
+            placeholder="E-mail Gravatar"
             value={ gravatarEmail }
             onChange={ this.handleChange }
           />
@@ -88,17 +87,18 @@ class Login extends Component {
 }
 
 const mapDispatchToProps = (dispatch) => ({
-  fetchTokenThunkProp: () => dispatch(fetchTokenThunk()),
-  // saveTokenProp: () => dispatch(saveToken()),
+  // fetchTokenThunkProp: () =>localStorage.setItem('token', data.token)); dispatch(fetchTokenThunk()),
+  saveTokenProp: (token) => dispatch(saveToken(token)),
 });
 
-const mapStateToProps = ({ tokenReducer }) => ({
-  token: tokenReducer.token,
+const mapStateToProps = ({ token }) => ({
+  token,
 });
 
 Login.propTypes = {
-  fetchTokenThunkProp: propTypes.func.isRequired,
+  // fetchTokenThunkProp: propTypes.func.isRequired,
   token: propTypes.string.isRequired,
+  saveTokenProp: propTypes.func.isRequired,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Login);

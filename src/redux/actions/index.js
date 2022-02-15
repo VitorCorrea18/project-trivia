@@ -4,7 +4,7 @@ export const FETCH_USER_NAME = 'FETCH_USER_NAME';
 export const FETCH_USER_ASSERTIONS = 'FETCH_USER_ASSERTIONS';
 export const FETCH_USER_SCORE = 'FETCH_USER_SCORE';
 export const FETCH_USER_EMAIL = 'FETCH_USER_EMAIL';
-export const FETCH_TOKEN = 'FETCH_TOKEN';
+export const SAVE_TOKEN = 'SAVE_TOKEN';
 
 export function fetchUserName(name) {
   return {
@@ -43,7 +43,7 @@ export function fetchUserEmail(email) {
 }
 
 export const saveToken = (payload) => ({
-  type: FETCH_TOKEN,
+  type: SAVE_TOKEN,
   payload,
 });
 
