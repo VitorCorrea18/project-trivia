@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Redirect, Link } from 'react-router-dom';
 import propTypes from 'prop-types';
 import { saveToken } from '../redux/actions/index'; // Action
-import fetchToken from '../services/fetch';
+import { fetchToken } from '../services/fetch';
 
 class Login extends Component {
   constructor() {
