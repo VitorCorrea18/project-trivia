@@ -2,7 +2,8 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Redirect, Link } from 'react-router-dom';
 import propTypes from 'prop-types';
-import { saveToken } from '../redux/actions/index'; // Action
+import md5 from 'crypto-js/md5';
+import { saveToken, saveName, saveEmail } from '../redux/actions/index'; // Action
 import fetchToken from '../services/fetch';
 
 class Login extends Component {
@@ -43,10 +44,16 @@ class Login extends Component {
 
   handleLogin = async (e) => {
     e.preventDefault();
-    const { saveTokenProp } = this.props;
+    const { playerName, gravatarEmail } = this.state;
+    const encryptedEmail = md5(gravatarEmail).toString();
+    console.log(encryptedEmail);
+
+    const { saveTokenProp, saveNameProp, saveEmailProp } = this.props;
     const data = await fetchToken();
     await saveTokenProp(data.token);
     this.saveTokenLocalStorage();
+    saveNameProp(playerName);
+    saveEmailProp(encryptedEmail);
     this.setState({ isLogged: true });
   };
 
@@ -95,18 +102,21 @@ class Login extends Component {
 }
 
 const mapDispatchToProps = (dispatch) => ({
-  // fetchTokenThunkProp: () =>localStorage.setItem('token', data.token)); dispatch(fetchTokenThunk()),
   saveTokenProp: (token) => dispatch(saveToken(token)),
+  saveNameProp: (name) => dispatch(saveName(name)),
+  saveEmailProp: (gravatarEmail) => dispatch(saveEmail(gravatarEmail)),
 });
 
-const mapStateToProps = ({ token }) => ({
+const mapStateToProps = ({ token, name, gravatarEmail }) => ({
   token,
+  name,
+  gravatarEmail,
 });
 
 Login.propTypes = {
-  // fetchTokenThunkProp: propTypes.func.isRequired,
-  token: propTypes.string.isRequired,
-  saveTokenProp: propTypes.func.isRequired,
-};
+  saveNameProp: propTypes.func,
+  saveTokenProp: propTypes.func,
+  token: propTypes.any,
+}.isRequired;
 
 export default connect(mapStateToProps, mapDispatchToProps)(Login);
