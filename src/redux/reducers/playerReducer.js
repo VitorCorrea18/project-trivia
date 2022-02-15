@@ -6,12 +6,10 @@ import {
 } from '../actions/index';
 
 const INITIAL_STATE = {
-  player: {
-    name: '',
-    assertions: '',
-    score: '',
-    gravatarEmail: '',
-  },
+  name: '',
+  assertions: '',
+  score: '',
+  gravatarEmail: '',
 };
 
 function playerReducer(state = INITIAL_STATE, { type, payload }) {
