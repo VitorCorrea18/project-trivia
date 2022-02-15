@@ -1,10 +1,9 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Redirect } from 'react-router-dom';
+import { Redirect, Link } from 'react-router-dom';
 import propTypes from 'prop-types';
 import { saveToken } from '../redux/actions/index'; // Action
 import fetchToken from '../services/fetch';
-import { Link } from 'react-router-dom';
 
 class Login extends Component {
   constructor() {
