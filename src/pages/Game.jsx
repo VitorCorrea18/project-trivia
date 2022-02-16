@@ -80,4 +80,4 @@ class Game extends React.Component {
 }
 
 export default Game;
-// if(answer === correct_answer) {xblau = correct_answer} else {xablau === `${wrong-answer} - ${index}`
+// if(answer === correct_answer) { = correct_answer} else {xablau === `${wrong-answer} - ${index}`
