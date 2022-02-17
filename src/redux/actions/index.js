@@ -1,4 +1,4 @@
-import fetchToken from '../../services/fetch';
+import { fetchToken } from '../../services/fetch';
 
 export const FETCH_USER_NAME = 'FETCH_USER_NAME';
 export const FETCH_USER_ASSERTIONS = 'FETCH_USER_ASSERTIONS';
@@ -14,7 +14,6 @@ export function fetchUserAssertions(assertions) {
     },
   };
 }
-
 export function fetchUserScore(score) {
   return {
     type: FETCH_USER_SCORE,

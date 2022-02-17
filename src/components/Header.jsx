@@ -12,7 +12,6 @@ class Header extends Component {
   }
 
   render() {
-    console.log(this.props);
     const { name, email } = this.props;
     const { score } = this.state;
     return (

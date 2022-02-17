@@ -4,7 +4,7 @@ import { Redirect, Link } from 'react-router-dom';
 import propTypes from 'prop-types';
 import md5 from 'crypto-js/md5';
 import { saveToken, saveName, saveEmail } from '../redux/actions/index'; // Action
-import fetchToken from '../services/fetch';
+import { fetchToken } from '../services/fetch';
 
 class Login extends Component {
   constructor() {
