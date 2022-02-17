@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import { saveToken } from '../redux/actions/index';
 import { fetchQuestion, fetchToken } from '../services/fetch';
 import Header from '../components/Header';
+import '../styles/game.css';
 
 const NUMBER = 0.5;
 const EXPIRED_TOKEN_CODE = 3;
@@ -15,6 +16,8 @@ class Game extends React.Component {
       questions: [], // retorno da API
       questionNumber: 0,
       loading: true,
+      wrongAnswerClassName: '',
+      correctAnswerClassName: '',
     };
   }
 
@@ -44,8 +47,17 @@ class Game extends React.Component {
     }
   }
 
+  colorAnswer = () => {
+    this.setState({
+      correctAnswerClassName: 'correct-answer',
+      wrongAnswerClassName: 'wrong-answers',
+    });
+  }
+
   render() {
-    const { questions, questionNumber, loading } = this.state;
+    const {
+      questions, questionNumber, loading, correctAnswerClassName, wrongAnswerClassName,
+    } = this.state;
     if (loading) return <h1>loading...</h1>;
     const {
       category,
@@ -61,7 +73,6 @@ class Game extends React.Component {
       <>
         <Header />
         <main>
-          {console.log(allAnswer)}
           <section>
             <h3 data-testid="question-category">{category}</h3>
             <p data-testid="question-text">{question}</p>
@@ -74,7 +85,9 @@ class Game extends React.Component {
                   <button
                     key={ answer }
                     type="button"
+                    className={ correctAnswerClassName }
                     data-testid="correct-answer"
+                    onClick={ this.colorAnswer }
                   >
                     {answer}
                   </button>
@@ -85,6 +98,8 @@ class Game extends React.Component {
                   key={ answer }
                   type="button"
                   data-testid={ `wrong-answer-${index}` }
+                  className={ wrongAnswerClassName }
+                  onClick={ this.colorAnswer }
                 >
                   {answer}
                 </button>);
