@@ -22,20 +22,20 @@ class Game extends React.Component {
     this.getQuestions();
   }
 
-  getToken = async () => {
+  getNewToken = async () => {
     const { saveTokenProp } = this.props;
-    const newToken = await fetchToken();
-    localStorage.setItem('token', newToken.token);
-    saveTokenProp(newToken.token);
-    this.getQuestions();
+    const newToken = await fetchToken(); // Faz requisição de um novo token
+    localStorage.setItem('token', newToken.token); // salva o novo token no local Storage
+    saveTokenProp(newToken.token); // Salva o novo token no estado global
+    this.getQuestions(); // chama novamente a getQuestion para requerir as perguntas
   }
 
   getQuestions = async () => {
-    const token = localStorage.getItem('token');
-    const data = await fetchQuestion(token);
+    const token = localStorage.getItem('token'); // recupera o token do localStorage
+    const data = await fetchQuestion(token); // requisição das perguntas
 
     if (data.response_code === EXPIRED_TOKEN_CODE) {
-      this.getToken();
+      this.getNewToken(); // se o token estiver expirado chama a getNewQuestion
     } else {
       this.setState({
         questions: data.results,
@@ -55,7 +55,7 @@ class Game extends React.Component {
     } = questions[questionNumber];
 
     let allAnswer = [correctAnswer, ...incorrectAnswer];
-    allAnswer = allAnswer.sort(() => Math.random() - NUMBER); // comentar a fonte
+    allAnswer = allAnswer.sort(() => Math.random() - NUMBER); // https://flaviocopes.com/how-to-shuffle-array-javascript/
 
     return (
       <>
