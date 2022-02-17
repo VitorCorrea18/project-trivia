@@ -1,9 +1,12 @@
 import React from 'react';
-// import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
+import { saveToken } from '../redux/actions/index';
+import { fetchQuestion, fetchToken } from '../services/fetch';
 import Header from '../components/Header';
-import { fetchQuestion } from '../services/fetch';
 
 const NUMBER = 0.5;
+const EXPIRED_TOKEN_CODE = 3;
 
 class Game extends React.Component {
   constructor() {
@@ -19,15 +22,26 @@ class Game extends React.Component {
     this.getQuestions();
   }
 
+  getToken = async () => {
+    const { saveTokenProp } = this.props;
+    const newToken = await fetchToken();
+    localStorage.setItem('token', newToken.token);
+    saveTokenProp(newToken.token);
+    this.getQuestions();
+  }
+
   getQuestions = async () => {
-    // const { questions } = this.state;
     const token = localStorage.getItem('token');
     const data = await fetchQuestion(token);
-    this.setState({
-      questions: data.results,
-      loading: false,
-    });
-    console.log(token);
+
+    if (data.response_code === EXPIRED_TOKEN_CODE) {
+      this.getToken();
+    } else {
+      this.setState({
+        questions: data.results,
+        loading: false,
+      });
+    }
   }
 
   render() {
@@ -35,13 +49,13 @@ class Game extends React.Component {
     if (loading) return <h1>loading...</h1>;
     const {
       category,
-      correct_answer,
-      incorrect_answers,
+      correct_answer: correctAnswer,
+      incorrect_answers: incorrectAnswer,
       question,
     } = questions[questionNumber];
 
-    let allAnswer = [...incorrect_answers, correct_answer];
-    allAnswer = allAnswer.sort(() => Math.random() - NUMBER);
+    let allAnswer = [correctAnswer, ...incorrectAnswer];
+    allAnswer = allAnswer.sort(() => Math.random() - NUMBER); // comentar a fonte
 
     return (
       <>
@@ -55,7 +69,7 @@ class Game extends React.Component {
 
           <section data-testid="answer-options">
             {allAnswer.map((answer, index) => {
-              if (answer === correct_answer) {
+              if (answer === correctAnswer) {
                 return (
                   <button
                     key={ answer }
@@ -82,5 +96,16 @@ class Game extends React.Component {
   }
 }
 
-export default Game;
-// if(answer === correct_answer) { = correct_answer} else {xablau === `${wrong-answer} - ${index}`
+const mapDispatchToProps = (dispatch) => ({
+  saveTokenProp: (token) => dispatch(saveToken(token)),
+});
+
+const mapStateToProps = ({ token }) => ({
+  token,
+});
+
+Game.propTypes = {
+  saveTokenProp: PropTypes.func.isRequired,
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Game);
