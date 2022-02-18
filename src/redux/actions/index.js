@@ -1,22 +1,22 @@
 import { fetchToken } from '../../services/fetch';
 
-export const FETCH_USER_NAME = 'FETCH_USER_NAME';
-export const FETCH_USER_ASSERTIONS = 'FETCH_USER_ASSERTIONS';
-export const FETCH_USER_SCORE = 'FETCH_USER_SCORE';
-export const FETCH_USER_EMAIL = 'FETCH_USER_EMAIL';
+export const SAVE_USER_NAME = 'SAVE_USER_NAME';
+export const SAVE_USER_ASSERTIONS = 'SAVE_USER_ASSERTIONS';
+export const SAVE_USER_SCORE = 'SAVE_USER_SCORE';
+export const SAVE_USER_EMAIL = 'SAVE_USER_EMAIL';
 export const SAVE_TOKEN = 'SAVE_TOKEN';
 
-export function fetchUserAssertions(assertions) {
+export function saveUserAssertions(assertions) {
   return {
-    type: FETCH_USER_ASSERTIONS,
+    type: SAVE_USER_ASSERTIONS,
     payload: {
       assertions,
     },
   };
 }
-export function fetchUserScore(score) {
+export function saveUserScore(score) {
   return {
-    type: FETCH_USER_SCORE,
+    type: SAVE_USER_SCORE,
     payload: {
       score,
     },
@@ -29,12 +29,12 @@ export const saveToken = (payload) => ({
 });
 
 export const saveName = (payload) => ({
-  type: FETCH_USER_NAME,
+  type: SAVE_USER_NAME,
   payload,
 });
 
 export const saveEmail = (payload) => ({
-  type: FETCH_USER_EMAIL,
+  type: SAVE_USER_EMAIL,
   payload,
 });
 

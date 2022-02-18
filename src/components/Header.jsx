@@ -34,8 +34,8 @@ Header.propTypes = {
 
 function mapStateToProps(state) {
   return {
-    name: state.playerReducer.name,
-    email: state.playerReducer.email,
+    name: state.player.name,
+    email: state.player.email,
   };
 }
 

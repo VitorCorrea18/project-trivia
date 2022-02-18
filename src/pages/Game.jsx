@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { saveToken } from '../redux/actions/index';
+import { saveToken, saveUserScore } from '../redux/actions/index';
 import { fetchQuestion, fetchToken } from '../services/fetch';
 import Header from '../components/Header';
 import '../styles/game.css';
@@ -9,6 +9,13 @@ import '../styles/game.css';
 const SORT_NUMBER = 0.5;
 const EXPIRED_TOKEN_CODE = 3;
 const ONE_SECOND = 1000;
+const CORRECT_ANSWER_POINTS = 10;
+const EASY = 'easy';
+const EASY_POINTS = 1;
+const MEDIUM = 'medium';
+const MEDIUM_POINTS = 2;
+const HARD = 'hard';
+const HARD_POINTS = 3;
 
 class Game extends React.Component {
   constructor() {
@@ -75,11 +82,42 @@ class Game extends React.Component {
     }
   }
 
-  colorAnswer = () => {
+  saveRanking = (newPoints) => {
+    const { name, score, email, saveUserScoreProp } = this.props;
+    const newScore = score + newPoints;
+    const ranking = { name, score: newScore, picture: `https://www.gravatar.com/avatar/${email}` };
+    saveUserScoreProp(newScore);
+    localStorage.setItem('ranking', JSON.stringify(ranking));
+  }
+
+  calculateTotal = (difficulty) => {
+    const { counter } = this.state;
+    let difficultyPoints = 0;
+
+    switch (difficulty) {
+    case EASY:
+      difficultyPoints = EASY_POINTS;
+      break;
+    case MEDIUM:
+      difficultyPoints = MEDIUM_POINTS;
+      break;
+    case HARD:
+      difficultyPoints = HARD_POINTS;
+      break;
+    default:
+      break;
+    }
+
+    const total = CORRECT_ANSWER_POINTS + (counter * difficultyPoints);
+    this.saveRanking(total);
+  }
+
+  selectAnswer = (answer, difficulty) => {
     this.setState({
       correctAnswerClassName: 'correct-answer',
       wrongAnswerClassName: 'wrong-answers',
-    });
+    }, clearInterval(this.intervalId));
+    if (answer) this.calculateTotal(difficulty);
   }
 
   render() {
@@ -96,9 +134,7 @@ class Game extends React.Component {
     if (loading) return <h1>loading...</h1>;
 
     const {
-      category,
-      correct_answer: correctAnswer,
-      question,
+      category, correct_answer: correctAnswer, question, difficulty,
     } = questions[questionNumber];
 
     return (
@@ -122,7 +158,7 @@ class Game extends React.Component {
                     type="button"
                     className={ correctAnswerClassName }
                     data-testid="correct-answer"
-                    onClick={ this.colorAnswer }
+                    onClick={ () => this.selectAnswer(true, difficulty) }
                     disabled={ (counter === 0) } // se o estado counter for igual a 0 o disable passa a ser true
                   >
                     {answer}
@@ -135,7 +171,7 @@ class Game extends React.Component {
                   type="button"
                   data-testid={ `wrong-answer-${index}` }
                   className={ wrongAnswerClassName }
-                  onClick={ this.colorAnswer }
+                  onClick={ () => this.selectAnswer(false) }
                   disabled={ (counter === 0) } // se o estado counter for igual a 0 o disable passa a ser true
                 >
                   {answer}
@@ -150,14 +186,23 @@ class Game extends React.Component {
 
 const mapDispatchToProps = (dispatch) => ({
   saveTokenProp: (token) => dispatch(saveToken(token)),
+  saveUserScoreProp: (score) => dispatch(saveUserScore(score)),
 });
 
-const mapStateToProps = ({ token }) => ({
+const mapStateToProps = ({ token, player }) => ({
   token,
+  name: player.name,
+  score: player.score,
+  email: player.email,
+  picture: player.score,
 });
 
 Game.propTypes = {
   saveTokenProp: PropTypes.func.isRequired,
+  name: PropTypes.string.isRequired,
+  score: PropTypes.string.isRequired,
+  email: PropTypes.string.isRequired,
+  saveUserScoreProp: PropTypes.func.isRequired,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Game);
