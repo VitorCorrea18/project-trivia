@@ -1,0 +1,12 @@
+export const SORT_NUMBER = 0.5;
+export const EXPIRED_TOKEN_CODE = 3;
+export const ONE_SECOND = 1000;
+export const CORRECT_ANSWER_POINTS = 10;
+export const EASY = 'easy';
+export const EASY_POINTS = 1;
+export const MEDIUM = 'medium';
+export const MEDIUM_POINTS = 2;
+export const HARD = 'hard';
+export const HARD_POINTS = 3;
+export const LAST_QUESTION_INDEX = 4;
+export const MIN_ASSERTIONS = 3;

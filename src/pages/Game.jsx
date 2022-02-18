@@ -2,22 +2,14 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Redirect } from 'react-router-dom';
 import { connect } from 'react-redux';
-import { saveToken, saveUserScore } from '../redux/actions/index';
+import { saveToken, saveUserScore, saveUserAssertions } from '../redux/actions/index';
 import { fetchQuestion, fetchToken } from '../services/fetch';
 import Header from '../components/Header';
+import {
+  SORT_NUMBER, EXPIRED_TOKEN_CODE, ONE_SECOND, CORRECT_ANSWER_POINTS, EASY,
+  EASY_POINTS, MEDIUM, MEDIUM_POINTS, HARD, HARD_POINTS,
+  LAST_QUESTION_INDEX } from '../helpers/consts';
 import '../styles/game.css';
-
-const SORT_NUMBER = 0.5;
-const EXPIRED_TOKEN_CODE = 3;
-const ONE_SECOND = 1000;
-const CORRECT_ANSWER_POINTS = 10;
-const EASY = 'easy';
-const EASY_POINTS = 1;
-const MEDIUM = 'medium';
-const MEDIUM_POINTS = 2;
-const HARD = 'hard';
-const HARD_POINTS = 3;
-const LAST_QUESTION_INDEX = 4;
 
 class Game extends React.Component {
   constructor() {
@@ -94,6 +86,13 @@ class Game extends React.Component {
     const ranking = { name, score: newScore, picture: `https://www.gravatar.com/avatar/${email}` };
     saveUserScoreProp(newScore);
     localStorage.setItem('ranking', JSON.stringify(ranking));
+    this.saveAssertions();
+  }
+
+  saveAssertions = () => {
+    const { saveUserAssertionsProp, assertions } = this.props;
+    const newNumberAssertions = assertions + 1;
+    saveUserAssertionsProp(newNumberAssertions);
   }
 
   calculateTotal = (difficulty) => {
@@ -222,6 +221,7 @@ class Game extends React.Component {
 const mapDispatchToProps = (dispatch) => ({
   saveTokenProp: (token) => dispatch(saveToken(token)),
   saveUserScoreProp: (score) => dispatch(saveUserScore(score)),
+  saveUserAssertionsProp: (assertions) => dispatch(saveUserAssertions(assertions)),
 });
 
 const mapStateToProps = ({ token, player }) => ({
@@ -230,6 +230,7 @@ const mapStateToProps = ({ token, player }) => ({
   score: player.score,
   email: player.email,
   picture: player.score,
+  assertions: player.assertions,
 });
 
 Game.propTypes = {
@@ -238,6 +239,8 @@ Game.propTypes = {
   score: PropTypes.number.isRequired,
   email: PropTypes.string.isRequired,
   saveUserScoreProp: PropTypes.func.isRequired,
+  saveUserAssertionsProp: PropTypes.func.isRequired,
+  assertions: PropTypes.number.isRequired,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Game);
