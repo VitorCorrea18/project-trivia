@@ -6,21 +6,23 @@ import { MIN_ASSERTIONS } from '../helpers/consts';
 
 class Feedback extends React.Component {
   render() {
-    const { assertions } = this.props;
+    const { assertions, score } = this.props;
     return (
       <>
         <Header />
+        <h3 data-testid="feedback-total-question">{ assertions }</h3>
+        <h3 data-testid="feedback-total-score">{ score }</h3>
         <h1 data-testid="feedback-text">Feedback</h1>
-        <div>
-          {
-            (assertions < MIN_ASSERTIONS) ? (
-              <span data-testid="feedback-text">Could be better...</span>
+
+        {
+          (assertions < MIN_ASSERTIONS) ? (
+            <span data-testid="feedback-text">Could be better...</span>
+          )
+            : (
+              <span data-testid="feedback-text">Well Done!</span>
             )
-              : (
-                <span data-testid="feedback-text">Well Done!</span>
-              )
-          }
-        </div>
+        }
+
       </>
     );
   }
@@ -32,6 +34,7 @@ Feedback.propTypes = {
 
 const mapStateToProps = ({ player }) => ({
   assertions: player.assertions,
+  score: player.score,
 });
 
 export default connect(mapStateToProps)(Feedback);
