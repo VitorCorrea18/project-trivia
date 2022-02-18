@@ -38,14 +38,14 @@ class Game extends React.Component {
   }
 
   setTimer = () => {
-    let { counter } = this.state;
+    const { counter } = this.state;
     this.intervalId = setInterval(() => {
       if (counter === 0) {
         clearInterval(this.intervalId);
       } else {
-        this.setState({
-          counter: counter -= 1,
-        });
+        this.setState((prevState) => ({
+          counter: prevState.counter - 1,
+        }));
       }
     }, ONE_SECOND);
   }
@@ -124,7 +124,12 @@ class Game extends React.Component {
 
   switchQuestion = () => {
     let { questionNumber } = this.state;
-    this.state({ questionNumber: questionNumber += 1 });
+    this.setState({
+      wrongAnswerClassName: '',
+      correctAnswerClassName: '',
+      questionNumber: questionNumber += 1,
+      counter: 30,
+    }, this.setTimer);
   }
 
   render() {
@@ -222,7 +227,7 @@ const mapStateToProps = ({ token, player }) => ({
 Game.propTypes = {
   saveTokenProp: PropTypes.func.isRequired,
   name: PropTypes.string.isRequired,
-  score: PropTypes.string.isRequired,
+  score: PropTypes.number.isRequired,
   email: PropTypes.string.isRequired,
   saveUserScoreProp: PropTypes.func.isRequired,
 };
