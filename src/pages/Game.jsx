@@ -41,10 +41,12 @@ class Game extends React.Component {
   }
 
   setTimer = () => {
-    const { counter } = this.state;
     this.intervalId = setInterval(() => {
-      if (counter === 0) {
+      const { counter } = this.state;
+      console.log(this.intervalId, counter);
+      if (counter <= 0) {
         clearInterval(this.intervalId);
+        this.setState({ counter: 0 });
       } else {
         this.setState((prevState) => ({
           counter: prevState.counter - 1,

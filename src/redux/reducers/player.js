@@ -8,7 +8,7 @@ import {
 const INITIAL_STATE = {
   name: '',
   assertions: '',
-  score: '',
+  score: 0,
   gravatarEmail: '',
 };
 
@@ -19,7 +19,7 @@ function player(state = INITIAL_STATE, { type, payload }) {
   case SAVE_USER_ASSERTIONS:
     return { ...state, assertions: payload };
   case SAVE_USER_SCORE:
-    return { ...state, score: payload };
+    return { ...state, score: payload.score };
   case SAVE_USER_EMAIL:
     return { ...state, email: payload };
   default:
