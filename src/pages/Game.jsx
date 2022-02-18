@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { Redirect } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { saveToken, saveUserScore } from '../redux/actions/index';
 import { fetchQuestion, fetchToken } from '../services/fetch';
@@ -16,6 +17,7 @@ const MEDIUM = 'medium';
 const MEDIUM_POINTS = 2;
 const HARD = 'hard';
 const HARD_POINTS = 3;
+const LAST_QUESTION_INDEX = 4;
 
 class Game extends React.Component {
   constructor() {
@@ -29,6 +31,7 @@ class Game extends React.Component {
       correctAnswerClassName: '',
       counter: 30,
       nextQuestion: false,
+      feedback: false,
     };
   }
 
@@ -124,12 +127,14 @@ class Game extends React.Component {
 
   switchQuestion = () => {
     let { questionNumber } = this.state;
-    this.setState({
-      wrongAnswerClassName: '',
-      correctAnswerClassName: '',
-      questionNumber: questionNumber += 1,
-      counter: 30,
-    }, this.setTimer);
+    if (questionNumber < LAST_QUESTION_INDEX) {
+      this.setState({
+        wrongAnswerClassName: '',
+        correctAnswerClassName: '',
+        questionNumber: questionNumber += 1,
+        counter: 30,
+      }, this.setTimer);
+    } else this.setState({ feedback: true });
   }
 
   render() {
@@ -142,10 +147,11 @@ class Game extends React.Component {
       sortedAnswers,
       counter,
       nextQuestion,
+      feedback,
     } = this.state;
 
     if (loading) return <h1>loading...</h1>;
-
+    if (feedback) return <Redirect to="/feedback" />;
     const {
       category, correct_answer: correctAnswer, question, difficulty,
     } = questions[questionNumber];
