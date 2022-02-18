@@ -1,12 +1,23 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
+import { Redirect } from 'react-router-dom';
 import Header from '../components/Header';
 import { MIN_ASSERTIONS } from '../helpers/consts';
 
 class Feedback extends React.Component {
+  constructor() {
+    super();
+
+    this.state = {
+      isRedirected: false,
+    };
+  }
+
   render() {
     const { assertions, score } = this.props;
+    const { isRedirected } = this.state;
+    if (isRedirected) return <Redirect to="/" />;
     return (
       <>
         <Header />
@@ -22,7 +33,16 @@ class Feedback extends React.Component {
               <span data-testid="feedback-text">Well Done!</span>
             )
         }
+        <button
+          type="button"
+          data-testid="btn-play-again"
+          onClick={ () => this.setState({
+            isRedirected: true,
+          }) }
+        >
+          Play Again
 
+        </button>
       </>
     );
   }
