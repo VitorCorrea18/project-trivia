@@ -28,6 +28,7 @@ class Game extends React.Component {
       wrongAnswerClassName: '',
       correctAnswerClassName: '',
       counter: 30,
+      nextQuestion: false,
     };
   }
 
@@ -116,8 +117,14 @@ class Game extends React.Component {
     this.setState({
       correctAnswerClassName: 'correct-answer',
       wrongAnswerClassName: 'wrong-answers',
+      nextQuestion: true,
     }, clearInterval(this.intervalId));
     if (answer) this.calculateTotal(difficulty);
+  }
+
+  switchQuestion = () => {
+    let { questionNumber } = this.state;
+    this.state({ questionNumber: questionNumber += 1 });
   }
 
   render() {
@@ -129,6 +136,7 @@ class Game extends React.Component {
       wrongAnswerClassName,
       sortedAnswers,
       counter,
+      nextQuestion,
     } = this.state;
 
     if (loading) return <h1>loading...</h1>;
@@ -177,6 +185,20 @@ class Game extends React.Component {
                   {answer}
                 </button>);
             })}
+          </section>
+          <section>
+            {
+              (nextQuestion)
+              && (
+                <button
+                  type="button"
+                  data-testid="btn-next"
+                  onClick={ this.switchQuestion }
+                >
+                  Next
+                </button>
+              )
+            }
           </section>
         </main>
       </>
