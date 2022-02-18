@@ -6,8 +6,9 @@ import { fetchQuestion, fetchToken } from '../services/fetch';
 import Header from '../components/Header';
 import '../styles/game.css';
 
-const NUMBER = 0.5;
+const SORT_NUMBER = 0.5;
 const EXPIRED_TOKEN_CODE = 3;
+const ONE_SECOND = 1000;
 
 class Game extends React.Component {
   constructor() {
@@ -15,14 +16,41 @@ class Game extends React.Component {
     this.state = {
       questions: [], // retorno da API
       questionNumber: 0,
+      sortedAnswers: [],
       loading: true,
       wrongAnswerClassName: '',
       correctAnswerClassName: '',
+      counter: 30,
     };
   }
 
   componentDidMount() {
     this.getQuestions();
+    this.setTimer();
+  }
+
+  setTimer = () => {
+    let { counter } = this.state;
+    this.intervalId = setInterval(() => {
+      if (counter === 0) {
+        clearInterval(this.intervalId);
+      } else {
+        this.setState({
+          counter: counter -= 1,
+        });
+      }
+    }, ONE_SECOND);
+  }
+
+  sortAnswers = (questions) => {
+    // monta um array de arrays, cada array corresponde a uma pergunta e contém suas respectivas respostas embaralhadas
+    // e joga o resultado no estado sortedAnswers
+
+    const sortedAnswers = questions.map((quest) => {
+      const { correct_answer: correctAnswer, incorrect_answers: incorrectAnswer } = quest;
+      return [correctAnswer, ...incorrectAnswer].sort(() => Math.random() - SORT_NUMBER); // https://flaviocopes.com/how-to-shuffle-array-javascript/
+    });
+    this.setState({ sortedAnswers });
   }
 
   getNewToken = async () => {
@@ -43,7 +71,7 @@ class Game extends React.Component {
       this.setState({
         questions: data.results,
         loading: false,
-      });
+      }, this.sortAnswers(data.results));
     }
   }
 
@@ -56,22 +84,27 @@ class Game extends React.Component {
 
   render() {
     const {
-      questions, questionNumber, loading, correctAnswerClassName, wrongAnswerClassName,
+      questions,
+      questionNumber,
+      loading,
+      correctAnswerClassName,
+      wrongAnswerClassName,
+      sortedAnswers,
+      counter,
     } = this.state;
+
     if (loading) return <h1>loading...</h1>;
+
     const {
       category,
       correct_answer: correctAnswer,
-      incorrect_answers: incorrectAnswer,
       question,
     } = questions[questionNumber];
-
-    let allAnswer = [correctAnswer, ...incorrectAnswer];
-    allAnswer = allAnswer.sort(() => Math.random() - NUMBER); // https://flaviocopes.com/how-to-shuffle-array-javascript/
 
     return (
       <>
         <Header />
+        <span>{ counter }</span>
         <main>
           <section>
             <h3 data-testid="question-category">{category}</h3>
@@ -79,7 +112,9 @@ class Game extends React.Component {
           </section>
 
           <section data-testid="answer-options">
-            {allAnswer.map((answer, index) => {
+            {sortedAnswers[questionNumber].map((answer, index) => {
+              // usa o mesmo index questionNumber da pergunta sendo exibida na tela "questions[questionNumber]"
+              // passa pelo array de respostas da pergunta da vez, e monta os botões com as repostas
               if (answer === correctAnswer) {
                 return (
                   <button
@@ -88,6 +123,7 @@ class Game extends React.Component {
                     className={ correctAnswerClassName }
                     data-testid="correct-answer"
                     onClick={ this.colorAnswer }
+                    disabled={ (counter === 0) } // se o estado counter for igual a 0 o disable passa a ser true
                   >
                     {answer}
                   </button>
@@ -100,6 +136,7 @@ class Game extends React.Component {
                   data-testid={ `wrong-answer-${index}` }
                   className={ wrongAnswerClassName }
                   onClick={ this.colorAnswer }
+                  disabled={ (counter === 0) } // se o estado counter for igual a 0 o disable passa a ser true
                 >
                   {answer}
                 </button>);
