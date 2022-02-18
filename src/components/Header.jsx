@@ -3,17 +3,8 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
 class Header extends Component {
-  constructor() {
-    super();
-
-    this.state = {
-      score: 0,
-    };
-  }
-
   render() {
-    const { name, email } = this.props;
-    const { score } = this.state;
+    const { name, email, score } = this.props;
     return (
       <div>
         <img
@@ -32,10 +23,11 @@ Header.propTypes = {
   nome: PropTypes.string,
 }.isRequired;
 
-function mapStateToProps(state) {
+function mapStateToProps({ player }) {
   return {
-    name: state.player.name,
-    email: state.player.email,
+    name: player.name,
+    email: player.email,
+    score: player.score,
   };
 }
 

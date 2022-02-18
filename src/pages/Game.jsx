@@ -1,21 +1,15 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { Redirect } from 'react-router-dom';
 import { connect } from 'react-redux';
-import { saveToken, saveUserScore } from '../redux/actions/index';
+import { saveToken, saveUserScore, saveUserAssertions } from '../redux/actions/index';
 import { fetchQuestion, fetchToken } from '../services/fetch';
 import Header from '../components/Header';
+import {
+  SORT_NUMBER, EXPIRED_TOKEN_CODE, ONE_SECOND, CORRECT_ANSWER_POINTS, EASY,
+  EASY_POINTS, MEDIUM, MEDIUM_POINTS, HARD, HARD_POINTS,
+  LAST_QUESTION_INDEX } from '../helpers/consts';
 import '../styles/game.css';
-
-const SORT_NUMBER = 0.5;
-const EXPIRED_TOKEN_CODE = 3;
-const ONE_SECOND = 1000;
-const CORRECT_ANSWER_POINTS = 10;
-const EASY = 'easy';
-const EASY_POINTS = 1;
-const MEDIUM = 'medium';
-const MEDIUM_POINTS = 2;
-const HARD = 'hard';
-const HARD_POINTS = 3;
 
 class Game extends React.Component {
   constructor() {
@@ -28,6 +22,8 @@ class Game extends React.Component {
       wrongAnswerClassName: '',
       correctAnswerClassName: '',
       counter: 30,
+      nextQuestion: false,
+      feedback: false,
     };
   }
 
@@ -37,14 +33,16 @@ class Game extends React.Component {
   }
 
   setTimer = () => {
-    let { counter } = this.state;
     this.intervalId = setInterval(() => {
-      if (counter === 0) {
+      const { counter } = this.state;
+      console.log(this.intervalId, counter);
+      if (counter <= 0) {
         clearInterval(this.intervalId);
+        this.setState({ counter: 0 });
       } else {
-        this.setState({
-          counter: counter -= 1,
-        });
+        this.setState((prevState) => ({
+          counter: prevState.counter - 1,
+        }));
       }
     }, ONE_SECOND);
   }
@@ -88,6 +86,13 @@ class Game extends React.Component {
     const ranking = { name, score: newScore, picture: `https://www.gravatar.com/avatar/${email}` };
     saveUserScoreProp(newScore);
     localStorage.setItem('ranking', JSON.stringify(ranking));
+    this.saveAssertions();
+  }
+
+  saveAssertions = () => {
+    const { saveUserAssertionsProp, assertions } = this.props;
+    const newNumberAssertions = assertions + 1;
+    saveUserAssertionsProp(newNumberAssertions);
   }
 
   calculateTotal = (difficulty) => {
@@ -116,8 +121,21 @@ class Game extends React.Component {
     this.setState({
       correctAnswerClassName: 'correct-answer',
       wrongAnswerClassName: 'wrong-answers',
+      nextQuestion: true,
     }, clearInterval(this.intervalId));
     if (answer) this.calculateTotal(difficulty);
+  }
+
+  switchQuestion = () => {
+    let { questionNumber } = this.state;
+    if (questionNumber < LAST_QUESTION_INDEX) {
+      this.setState({
+        wrongAnswerClassName: '',
+        correctAnswerClassName: '',
+        questionNumber: questionNumber += 1,
+        counter: 30,
+      }, this.setTimer);
+    } else this.setState({ feedback: true });
   }
 
   render() {
@@ -129,10 +147,12 @@ class Game extends React.Component {
       wrongAnswerClassName,
       sortedAnswers,
       counter,
+      nextQuestion,
+      feedback,
     } = this.state;
 
     if (loading) return <h1>loading...</h1>;
-
+    if (feedback) return <Redirect to="/feedback" />;
     const {
       category, correct_answer: correctAnswer, question, difficulty,
     } = questions[questionNumber];
@@ -178,6 +198,20 @@ class Game extends React.Component {
                 </button>);
             })}
           </section>
+          <section>
+            {
+              (nextQuestion)
+              && (
+                <button
+                  type="button"
+                  data-testid="btn-next"
+                  onClick={ this.switchQuestion }
+                >
+                  Next
+                </button>
+              )
+            }
+          </section>
         </main>
       </>
     );
@@ -187,6 +221,7 @@ class Game extends React.Component {
 const mapDispatchToProps = (dispatch) => ({
   saveTokenProp: (token) => dispatch(saveToken(token)),
   saveUserScoreProp: (score) => dispatch(saveUserScore(score)),
+  saveUserAssertionsProp: (assertions) => dispatch(saveUserAssertions(assertions)),
 });
 
 const mapStateToProps = ({ token, player }) => ({
@@ -195,14 +230,17 @@ const mapStateToProps = ({ token, player }) => ({
   score: player.score,
   email: player.email,
   picture: player.score,
+  assertions: player.assertions,
 });
 
 Game.propTypes = {
   saveTokenProp: PropTypes.func.isRequired,
   name: PropTypes.string.isRequired,
-  score: PropTypes.string.isRequired,
+  score: PropTypes.number.isRequired,
   email: PropTypes.string.isRequired,
   saveUserScoreProp: PropTypes.func.isRequired,
+  saveUserAssertionsProp: PropTypes.func.isRequired,
+  assertions: PropTypes.number.isRequired,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Game);
