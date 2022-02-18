@@ -8,6 +8,7 @@ import '../styles/game.css';
 
 const NUMBER = 0.5;
 const EXPIRED_TOKEN_CODE = 3;
+const ONE_SECOND = 1000;
 
 class Game extends React.Component {
   constructor() {
@@ -15,15 +16,26 @@ class Game extends React.Component {
     this.state = {
       questions: [], // retorno da API
       questionNumber: 0,
+      // sortedAnswer: [],
       loading: true,
       wrongAnswerClassName: '',
       correctAnswerClassName: '',
+      counter: 30,
     };
   }
 
   componentDidMount() {
     this.getQuestions();
   }
+
+  componentWillUnmount() {
+    clearInterval(this.intervalId);
+  }
+
+  // sortAnswers = (questions) => {
+  //   const sortedAnswers = [];
+  //   questions.map((quest) => {});
+  // }
 
   getNewToken = async () => {
     const { saveTokenProp } = this.props;
@@ -36,7 +48,7 @@ class Game extends React.Component {
   getQuestions = async () => {
     const token = localStorage.getItem('token'); // recupera o token do localStorage
     const data = await fetchQuestion(token); // requisição das perguntas
-
+    console.log(data.results);
     if (data.response_code === EXPIRED_TOKEN_CODE) {
       this.getNewToken(); // se o token estiver expirado chama a getNewQuestion
     } else {
@@ -45,6 +57,19 @@ class Game extends React.Component {
         loading: false,
       });
     }
+  }
+
+  setTimer = () => {
+    const { counter } = this.state;
+    this.intervalId = setInterval(() => {
+      if (counter > 0) {
+        this.setState({
+          counter: counter - 1,
+        });
+      } else {
+        clearInterval(this.intervalId);
+      }
+    }, ONE_SECOND);
   }
 
   colorAnswer = () => {
@@ -58,6 +83,7 @@ class Game extends React.Component {
     const {
       questions, questionNumber, loading, correctAnswerClassName, wrongAnswerClassName,
     } = this.state;
+    const { counter } = this.state;
     if (loading) return <h1>loading...</h1>;
     const {
       category,
@@ -68,10 +94,10 @@ class Game extends React.Component {
 
     let allAnswer = [correctAnswer, ...incorrectAnswer];
     allAnswer = allAnswer.sort(() => Math.random() - NUMBER); // https://flaviocopes.com/how-to-shuffle-array-javascript/
-
     return (
       <>
         <Header />
+        <span>{ counter }</span>
         <main>
           <section>
             <h3 data-testid="question-category">{category}</h3>
