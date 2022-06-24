@@ -9,7 +9,6 @@ import {
   SORT_NUMBER, EXPIRED_TOKEN_CODE, ONE_SECOND, CORRECT_ANSWER_POINTS, EASY,
   EASY_POINTS, MEDIUM, MEDIUM_POINTS, HARD, HARD_POINTS,
   LAST_QUESTION_INDEX } from '../helpers/consts';
-import '../styles/game.css';
 
 class Game extends React.Component {
   constructor() {
@@ -160,14 +159,14 @@ class Game extends React.Component {
     return (
       <>
         <Header />
-        <span>{ counter }</span>
-        <main>
-          <section>
-            <h3 data-testid="question-category">{category}</h3>
-            <p data-testid="question-text">{question}</p>
+        <main className="game_page">
+          <span className="game_timer">{ counter }</span>
+          <section className="question_section">
+            <h3 className="question_title" data-testid="question-category">{category}</h3>
+            <p className="question" data-testid="question-text">{question}</p>
           </section>
 
-          <section data-testid="answer-options">
+          <section className="answer_section" data-testid="answer-options">
             {sortedAnswers[questionNumber].map((answer, index) => {
               // usa o mesmo index questionNumber da pergunta sendo exibida na tela "questions[questionNumber]"
               // passa pelo array de respostas da pergunta da vez, e monta os botões com as repostas
@@ -176,7 +175,7 @@ class Game extends React.Component {
                   <button
                     key={ answer }
                     type="button"
-                    className={ correctAnswerClassName }
+                    className={ `answer_btn ${correctAnswerClassName}` }
                     data-testid="correct-answer"
                     onClick={ () => this.selectAnswer(true, difficulty) }
                     disabled={ (counter === 0) } // se o estado counter for igual a 0 o disable passa a ser true
@@ -190,7 +189,7 @@ class Game extends React.Component {
                   key={ answer }
                   type="button"
                   data-testid={ `wrong-answer-${index}` }
-                  className={ wrongAnswerClassName }
+                  className={ `answer_btn ${wrongAnswerClassName}` }
                   onClick={ () => this.selectAnswer(false) }
                   disabled={ (counter === 0) } // se o estado counter for igual a 0 o disable passa a ser true
                 >
@@ -198,11 +197,12 @@ class Game extends React.Component {
                 </button>);
             })}
           </section>
-          <section>
+          <section className="next_section">
             {
               (nextQuestion)
               && (
                 <button
+                  className="next_btn"
                   type="button"
                   data-testid="btn-next"
                   onClick={ this.switchQuestion }
