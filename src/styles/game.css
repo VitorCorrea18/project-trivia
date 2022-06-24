@@ -36,8 +36,11 @@
 }
 
 .answer_btn {
-  width: 200px;
-  height: 80px;
+  min-width: 200px;
+  min-height: 80px;
+  max-width: fit-content;
+  max-height: fit-content;
+  margin: 5px;
   background-color: #0C4B33;
   color: #f2f0f0;
   font-size: 20px;
@@ -81,6 +84,7 @@
   }
   
   .question_section {
+    height: fit-content;
     margin: 0;
   }
   
@@ -91,22 +95,22 @@
   
   .question {
     font-size: 25px;
-    margin: 35px 5px;
+    margin: 25px 5px;
   }
   
   .answer_section {
-    height: 50px;
+    height: fit-content;
     flex-wrap: wrap;
   }
   
   .answer_btn {
-    width: 150px;
-    height: 60px;
+    min-width: 150px;
+    min-height: 60px;
     font-size: 20px;
     margin: 5px;
   }
   
   .next_section {
-    margin: 130px 0;
+    margin: 10px 0;
   }
 }
