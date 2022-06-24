@@ -4,6 +4,7 @@ import { Redirect } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { saveToken, saveUserScore, saveUserAssertions } from '../redux/actions/index';
 import { fetchQuestion, fetchToken } from '../services/fetch';
+import formatQuotes from '../utils/formatString';
 import Header from '../components/Header';
 import {
   SORT_NUMBER, EXPIRED_TOKEN_CODE, ONE_SECOND, CORRECT_ANSWER_POINTS, EASY,
@@ -14,7 +15,7 @@ class Game extends React.Component {
   constructor() {
     super();
     this.state = {
-      questions: [], // retorno da API
+      questions: [],
       questionNumber: 0,
       sortedAnswers: [],
       loading: true,
@@ -34,7 +35,6 @@ class Game extends React.Component {
   setTimer = () => {
     this.intervalId = setInterval(() => {
       const { counter } = this.state;
-      console.log(this.intervalId, counter);
       if (counter <= 0) {
         clearInterval(this.intervalId);
         this.setState({ counter: 0 });
@@ -68,14 +68,14 @@ class Game extends React.Component {
   getQuestions = async () => {
     const token = localStorage.getItem('token'); // recupera o token do localStorage
     const data = await fetchQuestion(token); // requisição das perguntas
-
     if (data.response_code === EXPIRED_TOKEN_CODE) {
       this.getNewToken(); // se o token estiver expirado chama a getNewQuestion
     } else {
+      const questions = formatQuotes(data.results);
       this.setState({
-        questions: data.results,
+        questions,
         loading: false,
-      }, this.sortAnswers(data.results));
+      }, this.sortAnswers(questions));
     }
   }
 
@@ -111,7 +111,6 @@ class Game extends React.Component {
     default:
       break;
     }
-
     const total = CORRECT_ANSWER_POINTS + (counter * difficultyPoints);
     this.saveRanking(total);
   }
@@ -133,21 +132,15 @@ class Game extends React.Component {
         correctAnswerClassName: '',
         questionNumber: questionNumber += 1,
         counter: 30,
+        nextQuestion: false,
       }, this.setTimer);
     } else this.setState({ feedback: true });
   }
 
   render() {
     const {
-      questions,
-      questionNumber,
-      loading,
-      correctAnswerClassName,
-      wrongAnswerClassName,
-      sortedAnswers,
-      counter,
-      nextQuestion,
-      feedback,
+      questions, questionNumber, loading, correctAnswerClassName, wrongAnswerClassName,
+      sortedAnswers, counter, nextQuestion, feedback,
     } = this.state;
 
     if (loading) return <h1>loading...</h1>;
@@ -163,7 +156,7 @@ class Game extends React.Component {
           <span className="game_timer">{ counter }</span>
           <section className="question_section">
             <h3 className="question_title" data-testid="question-category">{category}</h3>
-            <p className="question" data-testid="question-text">{question}</p>
+            <p className="question">{question}</p>
           </section>
 
           <section className="answer_section" data-testid="answer-options">
