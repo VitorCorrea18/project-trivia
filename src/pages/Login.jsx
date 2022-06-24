@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Redirect, Link } from 'react-router-dom';
+import { Redirect } from 'react-router-dom';
 import propTypes from 'prop-types';
 import md5 from 'crypto-js/md5';
 import { saveToken, saveName, saveEmail } from '../redux/actions/index'; // Action
 import { fetchToken } from '../services/fetch';
+import trivia from '../trivia.png';
 
 class Login extends Component {
   constructor() {
@@ -61,9 +62,11 @@ class Login extends Component {
     const { playerName, gravatarEmail, isBtnDisabled, isLogged } = this.state;
     if (isLogged) return <Redirect to="/game" />;
     return (
-      <main>
-        <form onSubmit={ this.handleLogin } action="">
+      <main className="login_page">
+        <img className="logo_img" src={ trivia } alt="trivia" />
+        <form className="login_form" onSubmit={ this.handleLogin } action="">
           <input
+            className="login_input"
             data-testid="input-player-name"
             name="playerName"
             type="text"
@@ -72,6 +75,7 @@ class Login extends Component {
             onChange={ this.handleChange }
           />
           <input
+            className="login_input"
             name="gravatarEmail"
             data-testid="input-gravatar-email"
             type="email"
@@ -80,6 +84,7 @@ class Login extends Component {
             onChange={ this.handleChange }
           />
           <button
+            className="play_btn"
             disabled={ isBtnDisabled }
             name="btnPlay"
             data-testid="btn-play"
@@ -88,14 +93,6 @@ class Login extends Component {
             Jogar!
           </button>
         </form>
-        <div>
-          <Link
-            to="/settings"
-            data-testid="btn-settings"
-          >
-            Configurações
-          </Link>
-        </div>
       </main>
     );
   }
