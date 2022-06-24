@@ -1,0 +1,18 @@
+.header_div {
+  background-color: #0C4B33;
+  color: #f2f0f0;
+  display: flex;
+  align-items: center;
+}
+
+.header_img {
+  width: 100px;
+}
+
+.player_name {
+  margin: 0 50px;
+}
+
+.player_score {
+  margin: 0 50px;
+}
