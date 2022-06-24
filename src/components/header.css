@@ -16,3 +16,14 @@
 .player_score {
   margin: 0 50px;
 }
+
+@media screen and (max-width: 800px) {
+  
+  .player_name {
+    margin: 0 30px 0 10px;
+  }
+  
+  .player_score {
+    margin: 0;
+  }
+}

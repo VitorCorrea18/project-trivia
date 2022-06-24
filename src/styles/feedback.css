@@ -50,3 +50,30 @@
   font-size: 15px;
   color: #e1dddd;
 }
+
+@media screen and (max-width: 800px) {
+  
+  .score_section {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 100px;
+    margin: 70px 0;
+  }
+  
+  .assertions {
+    font-size: 40px;
+    margin: 20px 0;
+  
+  }
+  
+  .total_score {
+    font-size: 40px;
+    margin: 0px;
+  }
+  
+  .feedback_text {
+    margin-bottom: 50px
+  }
+}
