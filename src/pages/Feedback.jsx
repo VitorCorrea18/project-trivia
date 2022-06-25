@@ -21,28 +21,56 @@ class Feedback extends React.Component {
     return (
       <>
         <Header />
-        <h3 data-testid="feedback-total-question">{ assertions }</h3>
-        <h3 data-testid="feedback-total-score">{ score }</h3>
-        <h1 data-testid="feedback-text">Feedback</h1>
+        <main className="feedback_page">
+          <section className="score_section">
+            <h3
+              className="assertions"
+              data-testid="feedback-total-question"
+            >
+              { `Assertions: ${assertions}` }
+            </h3>
+            <h3
+              className="total_score"
+              data-testid="feedback-total-score"
+            >
+              { `Score: ${score}` }
+            </h3>
+          </section>
+          <section className="feedback_section">
 
-        {
-          (assertions < MIN_ASSERTIONS) ? (
-            <span data-testid="feedback-text">Could be better...</span>
-          )
-            : (
-              <span data-testid="feedback-text">Well Done!</span>
-            )
-        }
-        <button
-          type="button"
-          data-testid="btn-play-again"
-          onClick={ () => this.setState({
-            isRedirected: true,
-          }) }
-        >
-          Play Again
+            <h1 className="feedback_title" data-testid="feedback-text">Feedback</h1>
 
-        </button>
+            {
+              (assertions < MIN_ASSERTIONS) ? (
+                <span
+                  className="feedback_text"
+                  data-testid="feedback-text"
+                >
+                  Could be better...
+                </span>
+              )
+                : (
+                  <span
+                    className="feedback_text"
+                    data-testid="feedback-text"
+                  >
+                    Well Done!
+                  </span>
+                )
+            }
+            <button
+              className="playAgain_btn"
+              type="button"
+              data-testid="btn-play-again"
+              onClick={ () => this.setState({
+                isRedirected: true,
+              }) }
+            >
+              Play Again
+
+            </button>
+          </section>
+        </main>
       </>
     );
   }

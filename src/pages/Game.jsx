@@ -4,18 +4,18 @@ import { Redirect } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { saveToken, saveUserScore, saveUserAssertions } from '../redux/actions/index';
 import { fetchQuestion, fetchToken } from '../services/fetch';
+import formatQuotes from '../utils/formatString';
 import Header from '../components/Header';
 import {
   SORT_NUMBER, EXPIRED_TOKEN_CODE, ONE_SECOND, CORRECT_ANSWER_POINTS, EASY,
   EASY_POINTS, MEDIUM, MEDIUM_POINTS, HARD, HARD_POINTS,
   LAST_QUESTION_INDEX } from '../helpers/consts';
-import '../styles/game.css';
 
 class Game extends React.Component {
   constructor() {
     super();
     this.state = {
-      questions: [], // retorno da API
+      questions: [],
       questionNumber: 0,
       sortedAnswers: [],
       loading: true,
@@ -35,7 +35,6 @@ class Game extends React.Component {
   setTimer = () => {
     this.intervalId = setInterval(() => {
       const { counter } = this.state;
-      console.log(this.intervalId, counter);
       if (counter <= 0) {
         clearInterval(this.intervalId);
         this.setState({ counter: 0 });
@@ -69,14 +68,14 @@ class Game extends React.Component {
   getQuestions = async () => {
     const token = localStorage.getItem('token'); // recupera o token do localStorage
     const data = await fetchQuestion(token); // requisição das perguntas
-
     if (data.response_code === EXPIRED_TOKEN_CODE) {
       this.getNewToken(); // se o token estiver expirado chama a getNewQuestion
     } else {
+      const questions = formatQuotes(data.results);
       this.setState({
-        questions: data.results,
+        questions,
         loading: false,
-      }, this.sortAnswers(data.results));
+      }, this.sortAnswers(questions));
     }
   }
 
@@ -112,7 +111,6 @@ class Game extends React.Component {
     default:
       break;
     }
-
     const total = CORRECT_ANSWER_POINTS + (counter * difficultyPoints);
     this.saveRanking(total);
   }
@@ -134,21 +132,15 @@ class Game extends React.Component {
         correctAnswerClassName: '',
         questionNumber: questionNumber += 1,
         counter: 30,
+        nextQuestion: false,
       }, this.setTimer);
     } else this.setState({ feedback: true });
   }
 
   render() {
     const {
-      questions,
-      questionNumber,
-      loading,
-      correctAnswerClassName,
-      wrongAnswerClassName,
-      sortedAnswers,
-      counter,
-      nextQuestion,
-      feedback,
+      questions, questionNumber, loading, correctAnswerClassName, wrongAnswerClassName,
+      sortedAnswers, counter, nextQuestion, feedback,
     } = this.state;
 
     if (loading) return <h1>loading...</h1>;
@@ -160,14 +152,14 @@ class Game extends React.Component {
     return (
       <>
         <Header />
-        <span>{ counter }</span>
-        <main>
-          <section>
-            <h3 data-testid="question-category">{category}</h3>
-            <p data-testid="question-text">{question}</p>
+        <main className="game_page">
+          <span className="game_timer">{ counter }</span>
+          <section className="question_section">
+            <h3 className="question_title" data-testid="question-category">{category}</h3>
+            <p className="question">{question}</p>
           </section>
 
-          <section data-testid="answer-options">
+          <section className="answer_section" data-testid="answer-options">
             {sortedAnswers[questionNumber].map((answer, index) => {
               // usa o mesmo index questionNumber da pergunta sendo exibida na tela "questions[questionNumber]"
               // passa pelo array de respostas da pergunta da vez, e monta os botões com as repostas
@@ -176,7 +168,7 @@ class Game extends React.Component {
                   <button
                     key={ answer }
                     type="button"
-                    className={ correctAnswerClassName }
+                    className={ `answer_btn ${correctAnswerClassName}` }
                     data-testid="correct-answer"
                     onClick={ () => this.selectAnswer(true, difficulty) }
                     disabled={ (counter === 0) } // se o estado counter for igual a 0 o disable passa a ser true
@@ -190,7 +182,7 @@ class Game extends React.Component {
                   key={ answer }
                   type="button"
                   data-testid={ `wrong-answer-${index}` }
-                  className={ wrongAnswerClassName }
+                  className={ `answer_btn ${wrongAnswerClassName}` }
                   onClick={ () => this.selectAnswer(false) }
                   disabled={ (counter === 0) } // se o estado counter for igual a 0 o disable passa a ser true
                 >
@@ -198,11 +190,12 @@ class Game extends React.Component {
                 </button>);
             })}
           </section>
-          <section>
+          <section className="next_section">
             {
               (nextQuestion)
               && (
                 <button
+                  className="next_btn"
                   type="button"
                   data-testid="btn-next"
                   onClick={ this.switchQuestion }
