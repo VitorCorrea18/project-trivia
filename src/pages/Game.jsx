@@ -32,6 +32,10 @@ class Game extends React.Component {
     this.setTimer();
   }
 
+  componentWillUnmount() {
+    clearInterval(this.intervalId);
+  }
+
   setTimer = () => {
     this.intervalId = setInterval(() => {
       const { counter } = this.state;
@@ -192,7 +196,7 @@ class Game extends React.Component {
           </section>
           <section className="next_section">
             {
-              (nextQuestion)
+              (nextQuestion || counter === 0)
               && (
                 <button
                   className="next_btn"
