@@ -26,7 +26,7 @@ npm start
 
 - <b>Now it should be running on your default browser</b>
 
-## Usage
+## How to play
 
 * <b>Login</b> <br>
 > You must enter your name and e-mail then click 'Jogar' button. If you have a gravatar registred e-mail you should see your avatar once you start the game.
