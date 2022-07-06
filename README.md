@@ -5,7 +5,7 @@ This project was developed during the web development course at [Trybe](https://
 [Jorge Dorio](https://github.com/JorgeDorio),
 [Tadeo Salaviaw](https://github.com/SALAVIAW), and myself.
 The project is a Trivia game. We used the free API [Open Trivia Database](https://opentdb.com/)
-to feed our front end project. The main goal here was to put in practice our knowledge of React and Redux.
+to feed our front end project. The main goal here was to put in practice what we had learned of React and Redux.
 
 <img src="./trivia.png" alt='screenshot' width="500">
 
